@@ -110,6 +110,17 @@ def authorize_outcome_access(
     if source == "random" and _overlaps(start, end, random_embargo):
         raise OutcomeAccessError("Randomized Apr 30-May 2 outcomes are embargoed")
 
+    if source == "normal" and workflow == "training" and purpose == "features":
+        normal_history = (
+            _window(config, "burn_in")[0],
+            _window(config, "normal_train")[1],
+        )
+        if _inside(start, end, normal_history):
+            return
+        raise OutcomeAccessError(
+            f"Normal feature history must stay inside burn-in/training dates: {start}-{end}"
+        )
+
     allowed: dict[tuple[Workflow, Purpose, Source], tuple[int, int]] = {
         ("week0", "diagnostics", "random"): _window(config, "random_train"),
         ("training", "training", "normal"): _window(config, "normal_train"),

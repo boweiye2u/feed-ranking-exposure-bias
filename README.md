@@ -72,3 +72,37 @@ python scripts/week0_structural_audit.py
 ```
 
 It writes `~/recom/processed/audits/m1_3_week0_structural_audit.json`. Outcome-bearing loaders are subject to the protocol guard; final-test outcomes cannot be opened by pre-final workflows.
+
+## M2.1 static features
+
+Build the authorized normal and RQ3-randomized training FS1 tables with:
+
+```bash
+python scripts/build_fs1.py
+```
+
+Outputs are written under `~/recom/processed/fs1/v1/`. Features and labels are separate Parquet files joined by stable `impression_id`; only metadata schemas are checked for validation and final-test windows. See `docs/milestones/M2.1.md` and `reports/m2_1_fs1_quality.md`.
+
+Build point-in-time FS2 user/video aggregates with:
+
+```bash
+python scripts/build_fs2.py
+```
+
+FS2 uses only strictly earlier-day normal-policy outcomes, freezes `alpha=20` and Apr 9–11 priors, and writes training-only artifacts under `~/recom/processed/fs2/v1/`. Click history remains separated into tab-1 valid play and tab-0 literal click. See `docs/milestones/M2.2.md` and `reports/m2_2_fs2_quality.md`.
+
+Build FS3 category-affinity, recency, and separate last-20 neural-history inputs with:
+
+```bash
+python scripts/build_fs3.py
+```
+
+FS3 preserves FS2, uses prior-day normal-only aggregates, and writes fixed-length strictly earlier normal-policy histories under `~/recom/processed/fs3/v1/`. The canonical tag-set representation treats undocumented numeric tags as opaque IDs.
+
+Run the M2 feature-freeze integration gate with:
+
+```bash
+python scripts/review_m2_features.py
+```
+
+All feature, label, and sequence artifacts use ascending `impression_id` order and versioned `m2-features-v1` manifests. Loaders fail on positional misalignment or incompatible builds rather than silently joining by row. The exhaustive feature manifest and quality report are written to `~/recom/processed/m2/v1/`; see `docs/milestones/M2.4a.md` and `reports/m2_4_integration_quality.md`.

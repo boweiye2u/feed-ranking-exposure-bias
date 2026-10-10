@@ -84,3 +84,30 @@ def test_permitted_week0_slice_is_authorized() -> None:
         workflow="week0",
         purpose="diagnostics",
     )
+
+
+def test_normal_burn_in_and_training_outcomes_are_authorized_for_features() -> None:
+    authorize_outcome_access(
+        load_protocol(),
+        source="normal",
+        start=20220409,
+        end=20220429,
+        workflow="training",
+        purpose="features",
+    )
+
+
+@pytest.mark.parametrize(
+    ("source", "start", "end"),
+    [("random", 20220422, 20220429), ("normal", 20220409, 20220430)],
+)
+def test_unauthorized_feature_history_is_rejected(source, start, end) -> None:
+    with pytest.raises(OutcomeAccessError):
+        authorize_outcome_access(
+            load_protocol(),
+            source=source,
+            start=start,
+            end=end,
+            workflow="training",
+            purpose="features",
+        )

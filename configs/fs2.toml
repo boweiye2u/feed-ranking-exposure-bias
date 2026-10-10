@@ -1,0 +1,37 @@
+[fs2]
+version = "v1"
+output_subdirectory = "fs2/v1"
+history_source = "normal_only"
+history_start = 20220409
+history_end = 20220429
+strictly_prior_calendar_days = true
+alpha = 20.0
+
+[prior_window]
+source = "normal"
+start = 20220409
+end = 20220411
+status = "frozen_before_fs2_materialization"
+
+[frozen_priors]
+long_view = 0.3364927893253054
+like = 0.018082552258844184
+valid_play = 0.5335462150733153
+literal_click = 0.09788601347680856
+
+[click_semantics]
+valid_play_tab = 1
+literal_click_tab = 0
+pooled_click_feature = false
+
+[outputs]
+scopes = ["user", "video"]
+count_dtype = "Int64"
+rate_dtype = "Float64"
+preserve_fs1_columns = true
+separate_labels = true
+
+[forbidden]
+history_sources = ["random"]
+source_files = ["video_features_statistic_pure.csv"]
+feature_columns = ["long_view", "is_click", "is_like"]

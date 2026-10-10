@@ -1,0 +1,22 @@
+[freeze]
+version = "m2-features-v1"
+authorized_splits = ["normal_train", "random_train"]
+feature_sets = ["fs1", "fs2", "fs3"]
+sequence_length = 20
+padding_video_id = 0
+unknown_video_id = 1
+known_video_id_offset = 2
+history_source = "normal_only"
+manifest_filename = "feature_manifest.json"
+report_filename = "integration_quality.json"
+
+[static_provenance]
+user_features = "released_snapshot_cutoff_undocumented"
+basic_video_features = "released_snapshot_cutoff_undocumented"
+video_upload_date_check = "all_released_upload_dt_values_precede_authorized_training_dates"
+video_statistics = "excluded_unverified_temporal_cutoff"
+
+[restrictions]
+held_out_outcomes = false
+train_models = false
+push = false

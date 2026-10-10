@@ -24,13 +24,13 @@ venv/
 secrets/
 
 # Large/local artifacts (the canonical location is ~/recom/)
-raw/
-processed/
-models/
-predictions/
-cache/
-artifacts/
-data/
+/raw/
+/processed/
+/models/
+/predictions/
+/cache/
+/artifacts/
+/data/
 *.parquet
 *.arrow
 *.feather

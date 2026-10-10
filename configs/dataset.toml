@@ -1,0 +1,30 @@
+[dataset]
+name = "KuaiRand-Pure"
+data_subdirectory = "KuaiRand-Pure/data"
+
+[files]
+normal_early = "log_standard_4_08_to_4_21_pure.csv"
+normal_late = "log_standard_4_22_to_5_08_pure.csv"
+random = "log_random_4_22_to_5_08_pure.csv"
+users = "user_features_pure.csv"
+videos_basic = "video_features_basic_pure.csv"
+videos_statistics_excluded = "video_features_statistic_pure.csv"
+
+[identity]
+user_key = "user_id"
+video_key = "video_id"
+impression_key = "impression_id"
+source_id_multiplier = 1000000000
+
+[source_codes]
+normal_early = 1
+normal_late = 2
+random = 3
+
+[labels]
+columns = ["long_view", "is_click", "is_like"]
+
+[context]
+columns = ["tab", "is_rand"]
+tab_role = "interface_context"
+is_rand_role = "rq3_joint_only"

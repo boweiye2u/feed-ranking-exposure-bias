@@ -101,3 +101,27 @@ source .venv/bin/activate
 python scripts/audit_dataset.py
 pytest
 ```
+
+## M2.1 derived FS1 tables
+
+Authorized normal-training (Apr 12–29) and RQ3 randomized-training (Apr 22–29) FS1 tables are stored outside Git under `~/recom/processed/fs1/v1/`. They contain released static user and basic-video features plus explicit context and missing-entity indicators. The excluded aggregate video-statistics file, outcome-derived aggregates, and user histories do not enter FS1.
+
+Features and labels are separated by stable `impression_id`. Categorical codes and released nulls are preserved without imputation. `context__is_rand` is available only through the RQ3-joint feature selector. Held-out checks are structural and do not project, materialize, or summarize outcome fields.
+
+## M2.2 derived FS2 tables
+
+FS2 adds strictly prior-calendar-day user and video aggregates sourced only from normal-policy rows. The smoothing constant is fixed at 20, and task-specific priors are frozen from the Apr 9–11 normal burn-in. Valid-play (tab 1) and literal-click (tab 0) histories have separate eligible counts, positive counts, rates, and priors; no pooled click-history field is constructed.
+
+Only the two authorized training windows are materialized under `~/recom/processed/fs2/v1/`. Random outcomes never enter history, shipped aggregate video statistics remain excluded, and validation/final-test FS2 artifacts are not created at this checkpoint.
+
+## M2.3 derived FS3 and sequence tables
+
+FS3 adds prior-day normal-only user/category affinity and recency features. The released `tag` value is represented as a canonical complete set of opaque numeric IDs; 46 atomic IDs form 110 observed non-missing tag sets, and 96 videos receive the explicit `__MISSING__` category. The fixed `alpha = 20` smoothing and interface-separated click semantics are unchanged from FS2.
+
+Separate aligned sequence artifacts contain the last 20 strictly earlier normal-policy video exposures. Histories are left padded (`0`), reserve `1` for unknown video, and encode known raw video IDs with offset 2. A timestamp tie is never split at the fixed-length boundary. Engagement signals are not included in the sequence artifact at this checkpoint.
+
+Only normal-training and randomized-training targets are materialized under `~/recom/processed/fs3/v1/`. Randomized events never supply history; validation and test outputs remain unmaterialized. Detailed definitions and observed coverage are in `docs/milestones/M2.3.md` and `reports/m2_3_fs3_quality.md`.
+
+## M2 feature freeze and alignment
+
+M2.4a corrected a physical-order mismatch in normal-training FS1 caused by a left join that did not preserve input order. All training artifacts were rebuilt with ascending `impression_id`; keyed comparisons prove that no feature, label, or sequence value changed association. Every stage now carries a `m2-features-v1` manifest, and model loading fails on misordered, duplicate, missing, stale, or schema-incompatible inputs. See `docs/milestones/M2.4a.md` and `reports/m2_4_integration_quality.md`.

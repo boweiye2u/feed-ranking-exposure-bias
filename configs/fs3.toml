@@ -1,0 +1,44 @@
+[fs3]
+version = "v1"
+output_subdirectory = "fs3/v1"
+history_source = "normal_only"
+history_start = 20220409
+history_end = 20220429
+aggregate_cutoff = "strictly_prior_calendar_day"
+recency_unit = "milliseconds"
+alpha = 20.0
+
+[category]
+source_column = "tag"
+documented_meaning = "list of key categories (labels) of the video"
+representation = "canonical_complete_tag_set"
+token_semantics = "opaque_numeric_ids_without_released_codebook"
+separator = "|"
+missing_token = "__MISSING__"
+trim_tokens = true
+deduplicate_tokens = true
+numeric_sort = true
+
+[sequence]
+length = 20
+source = "normal_only"
+cutoff = "strictly_earlier_time_ms"
+ordering = "time_ms_then_encoded_video_id_then_impression_id"
+tie_boundary_policy = "drop_entire_timestamp_group_if_fixed_length_boundary_would_split_it"
+padding_side = "left"
+padding_video_id = 0
+unknown_video_id = 1
+known_video_id_offset = 2
+padding_time_ms = 0
+include_engagement_signals = false
+
+[context]
+tab = "preserved_with_documented_interface_limitations"
+is_rand = "rq3_joint_only_via_existing_fs1_selector"
+invent_policy_mapping = false
+
+[forbidden]
+history_sources = ["random"]
+source_files = ["video_features_statistic_pure.csv"]
+feature_columns = ["long_view", "is_click", "is_like"]
+materialized_splits = ["normal_train", "random_train"]

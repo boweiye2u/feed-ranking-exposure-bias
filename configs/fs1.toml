@@ -1,0 +1,42 @@
+[fs1]
+version = "v1"
+output_subdirectory = "fs1/v1"
+feature_prefix_user = "user__"
+feature_prefix_video = "video__"
+preserve_nulls = true
+unknown_entity_policy = "left_join_nulls_plus_missing_indicator"
+
+[context]
+tab_output = "context__tab"
+tab_allowed = true
+is_rand_output = "context__is_rand"
+is_rand_allowed_workflows = ["rq3_joint"]
+
+[categorical]
+user = [
+  "user_active_degree", "is_lowactive_period", "is_live_streamer",
+  "is_video_author", "follow_user_num_range", "fans_user_num_range",
+  "friend_user_num_range", "register_days_range", "onehot_feat0",
+  "onehot_feat1", "onehot_feat2", "onehot_feat3", "onehot_feat4",
+  "onehot_feat5", "onehot_feat6", "onehot_feat7", "onehot_feat8",
+  "onehot_feat9", "onehot_feat10", "onehot_feat11", "onehot_feat12",
+  "onehot_feat13", "onehot_feat14", "onehot_feat15", "onehot_feat16",
+  "onehot_feat17"
+]
+video = [
+  "author_id", "video_type", "upload_dt", "upload_type", "visible_status",
+  "music_id", "music_type", "tag"
+]
+context = ["context__tab", "context__is_rand"]
+
+[numeric]
+user = ["follow_user_num", "fans_user_num", "friend_user_num", "register_days"]
+video = ["video_duration", "server_width", "server_height"]
+
+[forbidden]
+feature_columns = [
+  "long_view", "is_click", "is_like", "is_follow", "is_comment",
+  "is_forward", "is_hate", "play_time_ms", "duration_ms",
+  "profile_stay_time", "comment_stay_time", "is_profile_enter"
+]
+source_files = ["video_features_statistic_pure.csv"]
