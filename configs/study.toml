@@ -1,0 +1,13 @@
+[study]
+name = "Feed Ranking under Exposure Bias"
+version = 5
+dataset = "KuaiRand-Pure"
+
+[paths]
+artifact_root_environment_variable = "KUAIRAND_ARTIFACT_ROOT"
+default_artifact_root = "~/recom/"
+
+[research_questions]
+rq1 = "Ranking architecture"
+rq2 = "Selection regret"
+rq3 = "Exposure-aware training"

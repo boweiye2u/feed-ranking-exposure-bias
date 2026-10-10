@@ -1,0 +1,99 @@
+[protocol]
+name = "Feed Ranking under Exposure Bias"
+study_version = "v5"
+amendment_version = "week0-v1"
+branch = "B1"
+status = "frozen"
+
+[splits.burn_in]
+source = "normal"
+start = 20220409
+end = 20220411
+feature_only = true
+
+[splits.normal_train]
+source = "normal"
+start = 20220412
+end = 20220429
+
+[splits.random_train]
+source = "random"
+start = 20220422
+end = 20220429
+usage = "RQ3 joint/random-only training and frozen Week-0 diagnostics only"
+
+[splits.normal_validation]
+source = "normal"
+start = 20220430
+end = 20220502
+
+[splits.random_validation_embargo]
+source = "random"
+start = 20220430
+end = 20220502
+outcomes_allowed = false
+
+[splits.final_test]
+sources = ["normal", "random"]
+start = 20220503
+end = 20220508
+outcomes_allowed_before_final_evaluation = false
+
+[targets.long_view]
+column = "long_view"
+role = "primary"
+tabs = "all"
+
+[targets.valid_play]
+column = "is_click"
+role = "secondary"
+tabs = [1]
+meaning = "valid play in the autoplay single-column interface"
+
+[targets.literal_click]
+column = "is_click"
+role = "interface_stratified_secondary"
+tabs = [0]
+meaning = "literal thumbnail click in the two-column interface"
+random_test_supported = false
+
+[targets.like]
+column = "is_like"
+role = "secondary"
+tabs = "all"
+requires_click = false
+
+[features]
+history_source = "normal_only"
+shipped_video_statistics = "excluded_unverified_temporal_cutoff"
+final_test_outcomes_in_features = false
+
+[metrics]
+primary = "pair_weighted_within_user_auc"
+primary_target = "long_view"
+tie_credit = 0.5
+single_class_users = "exclude_and_report"
+pair_cap_sensitivity = 952
+pair_cap_primary = false
+secondary = ["per_user_average_auc", "pooled_auc", "ndcg_at_5", "log_loss"]
+ndcg_k = 5
+ndcg_min_impressions = 5
+ndcg_gain = "2^rel-1"
+log_loss_epsilon = 1e-15
+
+[configuration_population]
+esmm_included = false
+maximum_configurations = 12
+
+[seeds]
+neural = [0, 1, 2]
+primary_neural = 0
+bootstrap = 0
+regret_split_primary = 0
+regret_stability = [1, 2]
+regret_splits_per_run = 50
+
+[inference]
+paired_user_bootstrap_resamples = 10000
+regret_bootstrap_resamples = 2000
+holm_comparisons = 6

@@ -1,0 +1,44 @@
+# Python build and test output
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Virtual environments and editor state
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Large/local artifacts (the canonical location is ~/recom/)
+raw/
+processed/
+models/
+predictions/
+cache/
+artifacts/
+data/
+*.parquet
+*.arrow
+*.feather
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.joblib
+
+# OS metadata
+.DS_Store
