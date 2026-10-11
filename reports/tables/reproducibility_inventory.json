@@ -1,0 +1,50 @@
+{
+  "excluded_large_artifacts": [
+    "raw data",
+    "processed Parquet tables",
+    "model checkpoints",
+    "prediction Parquet files"
+  ],
+  "execution": {
+    "lightgbm_seed": 202211,
+    "lightgbm_threads": 1,
+    "neural_device": "cpu",
+    "neural_seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "frozen_tags": {
+    "m2-features-v1": "5f0b0ea12fc89f0c61c8b4947428b39320b6a19b",
+    "m4-candidates-v1": "6f30ce489cfc5f5009e6373e2e10de0f4a515b6a",
+    "m5-prefinal-v1": "c936a93cf2c81efb95840a1e8a52e42437f8fb54",
+    "week0-protocol-v1": "84dde526189270a8df71cc100bf3f9a3c4c768ea"
+  },
+  "hardware": {
+    "cpu": "AMD EPYC 7573X; 2 sockets; 64 physical cores; 128 logical CPUs",
+    "cuda_available": false
+  },
+  "packages": {
+    "lightgbm": "4.7.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "polars": "2.0.0",
+    "pyarrow": "26.0.0",
+    "scikit_learn": "1.9.1",
+    "torch": "2.14.1+cpu"
+  },
+  "platform": "Linux-5.15.0-133-generic-x86_64-with-glibc2.35",
+  "protocol_hashes": {
+    "feature_manifest": "f613933fde572aefb5ada5e3c99d078c576da90103bbfe79a4e3c920631b408f",
+    "study_plan_v5": "3db23cac54770d5ace5279443dc28e3f1ae0c44a5da78539085660ce1201bdaf",
+    "week0_amendment_v1": "1802f9fd2f5aa1db0273c3900f848dfe9c3f1ffb05495c9544648cc354708b04"
+  },
+  "python": "3.12.7",
+  "source_hashes": {
+    "m6_1_manifest": "de70509f06e190ade3317fb93565a20fcc74c90634c15c388a2a0c92ac02f532",
+    "m6_2_results": "dab05b76c9830e4d4edb4f4d197397ed73819edc89f18a196332531bcab91214",
+    "m6_3_results": "8f34cdb9791e123dcfc1bc1d5131ba2aac51147d13d8d5d3ca40b74d7e782ab9"
+  }
+}

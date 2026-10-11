@@ -1,0 +1,27 @@
+{
+  "outputs": {
+    "reports/figures/01_dataset_chronology.png": "9e23cd7b30736ae145f16490971232b397b0af7552e9b5d940bea513840f17ef",
+    "reports/figures/01_dataset_chronology.svg": "a83c8970eb7d9aa81daa20cd9a38710e5e6b5678cb6caf8909d2ea977accdfb0",
+    "reports/figures/02_rq1_auc_comparison.png": "cba84ac77f968457970620e77eb62e233465b817787720165c6b776a7b4e9149",
+    "reports/figures/02_rq1_auc_comparison.svg": "1e800f9fa55c94d31f26fd68f9a1f60fba4627e2646aca5a802301dc8aa92023",
+    "reports/figures/03_rq2_selection_regret.png": "3fd2739b45cd2d5fced6e1fa6e27bb3cda0676fc8ecee62779f5bc45c31b3b0b",
+    "reports/figures/03_rq2_selection_regret.svg": "b65b40a2e41fed62686dd5d681f3e381595b709f9435849b2e87b4f5c72d3544",
+    "reports/figures/04_rq3_auc_logloss.png": "947fb08dc0f405a4c35d4277c91a6f78871d237002b8d753fd535ff01f22cee8",
+    "reports/figures/04_rq3_auc_logloss.svg": "dfb3fb201efe4faf2d986e70ab3ab4e18383c7468a86a22a2fdc0cacd9d9b7f0",
+    "reports/figures/05_six_paired_comparisons.png": "5fad16632125f9cc7a225a70277a00ab7177179eea16af0cff236d55e5f5a6b2",
+    "reports/figures/05_six_paired_comparisons.svg": "9579503c6a3d3f526f26c067ee396609cb90113e49d6df8be245d4305c011e5d",
+    "reports/figures/06_pair_concentration_sensitivity.png": "42ca6d2e2994c09b7c595499b906771086be535fa5e32612721da42541587f90",
+    "reports/figures/06_pair_concentration_sensitivity.svg": "8b81d2298cb737e025e0ac1c1a3ad202b9966a746d704b7aaa318e94f92ec351",
+    "reports/tables/paired_comparisons.csv": "263aca2486eb772d52afc65b1cae83791ab4f6599be03a8db37cff75cafa14a7",
+    "reports/tables/populations.csv": "5ac0d5acefc8e18c7a8f74e4afa93962ebea4f13cbfd5d39319d97422df7728a",
+    "reports/tables/reproducibility_inventory.json": "5362b70579ec898850816efd4d4982387584485105cb28e26d2978cec638a46c",
+    "reports/tables/rq1_long_view.csv": "92a9643f46edcf9eecc7ffd09bafb8c7673f65156ab0596772ee508d19ee5d26",
+    "reports/tables/rq2_regret.csv": "f05630788dacf42c2962c0fa07bdec9ae102152844a0d907b954ca91028e0744",
+    "reports/tables/rq3.csv": "15b1321df7c6fa491b1886fdd865a45ed1bdd8f3d834604cc9c4d60ac45ae320"
+  },
+  "source_hashes": {
+    "m6_1_manifest": "de70509f06e190ade3317fb93565a20fcc74c90634c15c388a2a0c92ac02f532",
+    "m6_2_results": "dab05b76c9830e4d4edb4f4d197397ed73819edc89f18a196332531bcab91214",
+    "m6_3_results": "8f34cdb9791e123dcfc1bc1d5131ba2aac51147d13d8d5d3ca40b74d7e782ab9"
+  }
+}

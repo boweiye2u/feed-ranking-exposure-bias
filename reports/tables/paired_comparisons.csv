@@ -1,0 +1,7 @@
+comparison,holm_adjusted_p_value,left,observed_pair_weighted_auc_difference,percentile_95_ci,right,tail_share_approximate_p_value
+mmoe_full_seed0_minus_fs1_deep,0.0,mmoe_full,0.025194896075959705,"[0.022389621575225106, 0.02799700022746284]",fs1_deep,0.0
+mmoe_full_seed0_minus_shared_bottom_seed0,0.0004,mmoe_full,-0.0027130744668980578,"[-0.004158132648365775, -0.0012630585909486046]",shared_bottom,0.0002
+mmoe_dense_only_seed0_minus_fs3_deep,0.0,mmoe_dense_only,0.0059868920574767115,"[0.0036294089980065834, 0.008376152377023214]",fs3_deep,0.0
+rq3_marginal_reweighting_minus_fs1_deep,0.884,rq3_marginal_reweighting,-0.00014467383793648203,"[-0.002235918853212132, 0.0019165092535402325]",fs1_deep,0.884
+rq3_joint_minus_fs1_deep,0.0,rq3_joint,0.09181684644121713,"[0.08746988371441305, 0.09610947778608962]",fs1_deep,0.0
+rq3_random_only_minus_fs1_deep,0.0,rq3_random_only,0.09274578624246843,"[0.08801616953282701, 0.09738905869131535]",fs1_deep,0.0

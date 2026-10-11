@@ -1,0 +1,24 @@
+[milestone]
+version = "m6.1-final-predictions-v1"
+required_tags = ["week0-protocol-v1", "m2-features-v1", "m4-candidates-v1", "m5-prefinal-v1"]
+
+[populations]
+start = 20220503
+end = 20220508
+normal_expected_rows = 93201
+random_expected_rows = 637492
+
+[history]
+source = "normal_only"
+aggregate_cutoff = "strictly_prior_calendar_day"
+sequence_cutoff = "strictly_earlier_time_ms"
+rolling_outcome_start = 20220503
+rolling_outcome_end = 20220507
+randomized_outcomes = false
+
+[predictions]
+primary_neural_seed = 0
+robustness_seeds = [1, 2]
+include_labels = false
+compute_metrics = false
+refit_adapters = false

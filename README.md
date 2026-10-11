@@ -227,3 +227,17 @@ python scripts/freeze_m5_prefinal.py
 ```
 
 The contender set and readiness manifest are stored under `~/recom/processed/prefinal/v1/`. M5.3 does not materialize final features or open held-out outcomes. See `docs/m5_3_statistical_amendment_v1.md`, `docs/milestones/M5.3.md`, and `reports/m5_3_prefinal_readiness.md`.
+
+## Final results
+
+The completed RQ1/RQ2/RQ3 study, frozen statistical results, limitations, and publication figures are summarized in [`reports/final_research_report.md`](reports/final_research_report.md).
+
+Key findings are exposure-dependent: the normal-validation-selected FS1-deep model has positive randomized-exposure selection regret across all 12 candidates, but the frozen contender-only interval includes zero. Joint and random-only RQ3 training substantially improve randomized-exposure ranking over the normal-only baseline, while marginal-frequency reweighting does not improve primary AUC. These are offline results and are not claims of causal policy effects or online business uplift.
+
+Rebuild the compact result tables and figures from the checksum-verified external artifacts with:
+
+```bash
+MPLCONFIGDIR=/tmp/kuairand-mpl PYTHONPATH=src .venv/bin/python scripts/build_results_package.py
+```
+
+The public repository intentionally excludes KuaiRand-Pure data, processed tables, predictions, categorical vocabularies, and trained model weights.
