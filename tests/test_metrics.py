@@ -98,3 +98,11 @@ def test_ndcg_score_ties_use_time_video_then_stable_order() -> None:
 
     assert first.ndcg_at_k == pytest.approx(second.ndcg_at_k)
     assert first.pooled_auc == pytest.approx(0.5)
+
+
+def test_complete_metrics_reject_missing_scores() -> None:
+    with pytest.raises(ValueError, match="finite probabilities"):
+        evaluate_ranking_metrics(
+            user_ids=[1, 1], labels=[1, 0], scores=[0.8, np.nan],
+            time_ms=[1, 2], video_ids=[10, 11],
+        )

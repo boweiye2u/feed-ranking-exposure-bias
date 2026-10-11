@@ -1,0 +1,46 @@
+[evaluation]
+version = "m5-prefinal-v1"
+normal_start = 20220503
+normal_end = 20220508
+random_start = 20220503
+random_end = 20220508
+primary_target = "long_view"
+primary_metric = "pair_weighted_within_user_auc"
+pair_cap = 952
+ndcg_k = 5
+tie_credit = 0.5
+
+[rq2]
+workflow_pick = "fs1_deep"
+candidate_count = 12
+split_count = 50
+split_seeds = [0, 1, 2]
+primary_split_seed = 0
+selection_tie_break = "lexicographic_candidate_id"
+random_pick = "arithmetic_mean_of_candidate_aucs_not_probabilities"
+unique_user_halves = true
+
+[inference]
+confidence_interval = "two_sided_percentile_2.5_97.5"
+paired_bootstrap_replicates = 10000
+regret_bootstrap_replicates = 2000
+bootstrap_seed = 0
+bootstrap_unit = "unique_user_with_multiplicity"
+holm_comparisons = 6
+tail_share_p_value = true
+
+[comparisons]
+comparison_1 = "mmoe_full_seed0 minus fs1_deep"
+comparison_2 = "mmoe_full_seed0 minus shared_bottom_seed0"
+comparison_3 = "mmoe_dense_only_seed0 minus fs3_deep"
+comparison_4 = "rq3_marginal_reweighting minus fs1_deep"
+comparison_5 = "rq3_joint minus fs1_deep"
+comparison_6 = "rq3_random_only minus fs1_deep"
+
+[access]
+protected_outcomes = ["long_view", "is_click", "is_like"]
+random_validation_outcomes_allowed = false
+final_outcomes_allowed_in_prefinal = false
+history_source = "normal_only"
+aggregate_cutoff = "strictly_prior_calendar_day"
+sequence_cutoff = "strictly_earlier_time_ms"

@@ -1,0 +1,53 @@
+[rq3]
+version = "rq3-preparation-v1"
+feature_set = "fs1"
+complexity = "deep"
+task = "long_view"
+output_subdirectory = "rq3/v1"
+
+[baseline]
+training_source = "normal"
+start = 20220412
+end = 20220429
+rows = 722481
+model_sha256 = "0d393cac1ea7293a93bb9e7703e0829da6d81da5cc3a1c43adfaf38c1da64414"
+adapter_sha256 = "5f1d2ef50e60785f056debac076994efc63253da6e1db71a148bf1db69283773"
+
+[random_training]
+source = "random"
+start = 20220422
+end = 20220429
+
+[weighting]
+name = "marginal-exposure reweighting"
+causal_ips = false
+frequency_population = "normal training impressions, 2022-04-12 through 2022-04-29"
+frequency_entity = "video_id"
+additive_alpha = 1.0
+raw_weight = "1 / (n_i + alpha)"
+clip_quantile = 0.99
+clip_population = "training impression-level raw weights"
+quantile_method = "linear"
+normalization = "arithmetic_mean_one_after_clipping"
+unseen_video_fallback = "clipped_maximum_before_frozen_normalization"
+
+[joint]
+sources = ["normal", "random"]
+include_context_is_rand = true
+random_evaluation_value = 1
+
+[random_only]
+include_context_is_rand = false
+categorical_vocabulary = "fit_on_random_training_only"
+
+[lightgbm]
+seed = 202211
+learning_rate = 0.05
+num_boost_round = 300
+num_leaves = 127
+max_depth = 10
+min_data_in_leaf = 100
+lambda_l1 = 0.0
+lambda_l2 = 1.0
+deterministic = true
+num_threads = 1

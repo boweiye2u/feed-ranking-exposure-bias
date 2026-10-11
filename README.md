@@ -197,3 +197,33 @@ python scripts/evaluate_neural_validation.py
 ```
 
 The workflow reuses the training-fitted neural adapter, builds strictly earlier normal-policy last-20 histories, evaluates all three seeds, and writes large predictions plus the candidate manifest under `~/recom/predictions/validation/v1/`. See `docs/milestones/M4.5.md` and `reports/m4_5_neural_validation.md`.
+
+## M5.1 RQ3 training-data preparation
+
+Prepare the frozen FS1-deep marginal-reweighting, normal-plus-random fusion, and random-only training inputs with:
+
+```bash
+python scripts/prepare_rq3_training.py
+```
+
+The workflow verifies the untouched M4.5-selected baseline, creates strategy-specific adapters, and writes large aligned artifacts under `~/recom/processed/rq3/v1/`. It does not train a model. See `docs/milestones/M5.1.md` and `reports/m5_1_rq3_preparation.md`.
+
+## M5.2 RQ3 LightGBM training
+
+Train one of the three frozen FS1-deep RQ3 alternatives with:
+
+```bash
+python scripts/train_rq3_lightgbm.py --arm marginal_reweighting
+```
+
+Valid arms are `marginal_reweighting`, `joint`, and `random_only`. Each uses the same 300-round deep-tree configuration and writes a checksum-bound bundle under `~/recom/models/lightgbm/rq3/v1/`. Run `python scripts/summarize_rq3_lightgbm.py` to verify the completed three-model population. See `docs/milestones/M5.2.md` and `reports/m5_2_rq3_lightgbm_training.md`.
+
+## M5.3 pre-final freeze
+
+Verify all frozen candidates and RQ3 bundles, then rebuild the outcome-free final-evaluation readiness manifest with:
+
+```bash
+python scripts/freeze_m5_prefinal.py
+```
+
+The contender set and readiness manifest are stored under `~/recom/processed/prefinal/v1/`. M5.3 does not materialize final features or open held-out outcomes. See `docs/m5_3_statistical_amendment_v1.md`, `docs/milestones/M5.3.md`, and `reports/m5_3_prefinal_readiness.md`.

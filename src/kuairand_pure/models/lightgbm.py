@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import shutil
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
@@ -34,6 +35,11 @@ def _sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _json_sha256(value: Any) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def load_lightgbm_config(path: Path | None = None) -> dict[str, Any]:
@@ -72,6 +78,7 @@ class TaskDataset:
     impression_ids: np.ndarray
     task: str
     rows: int
+    sample_weight: np.ndarray | None = None
 
 
 @dataclass(slots=True)
@@ -83,6 +90,7 @@ class LightGBMAdapter:
     categorical_features: list[str]
     numerical_features: list[str]
     vocabularies: dict[str, dict[str, int]]
+    include_is_rand: bool = False
 
     @classmethod
     def fit(
@@ -91,6 +99,7 @@ class LightGBMAdapter:
         *,
         feature_set: str,
         feature_manifest_path: Path,
+        include_is_rand: bool = False,
     ) -> "LightGBMAdapter":
         if feature_set not in FEATURE_SETS:
             raise ValueError(f"Unknown feature set: {feature_set}")
@@ -101,10 +110,19 @@ class LightGBMAdapter:
         feature_names = [
             item["name"] for item in fields
             if feature_set in item["present_in"]
-            and item["model_role"] == "dense_model_feature"
+            and (
+                item["model_role"] == "dense_model_feature"
+                or (
+                    include_is_rand
+                    and item["name"] == "context__is_rand"
+                    and item["model_role"] == "rq3_joint_only"
+                )
+            )
             and "lightgbm" in item["allowed_model_families"]
-            and item["name"] != "context__is_rand"
+            and (include_is_rand or item["name"] != "context__is_rand")
         ]
+        if include_is_rand and "context__is_rand" not in feature_names:
+            raise ValueError("RQ3 joint adapter did not include context__is_rand")
         if not feature_names or any(name not in features.columns for name in feature_names):
             raise ValueError("Training features do not match the frozen manifest")
         expected_dtypes = {item["name"]: item["data_type"] for item in fields}
@@ -133,6 +151,7 @@ class LightGBMAdapter:
             categorical_features=categorical,
             numerical_features=numerical,
             vocabularies=vocabularies,
+            include_is_rand=include_is_rand,
         )
 
     def transform(self, features: pl.DataFrame) -> pd.DataFrame:
@@ -182,6 +201,7 @@ class LightGBMAdapter:
             "categorical_features": self.categorical_features,
             "numerical_features": self.numerical_features,
             "vocabularies": self.vocabularies,
+            "include_is_rand": self.include_is_rand,
             "encoding": {
                 "missing_code": MISSING_CODE,
                 "unknown_code": UNKNOWN_CODE,
@@ -207,6 +227,7 @@ class LightGBMAdapter:
             categorical_features=data["categorical_features"],
             numerical_features=data["numerical_features"],
             vocabularies=data["vocabularies"],
+            include_is_rand=bool(data.get("include_is_rand", False)),
         )
 
 
@@ -215,6 +236,7 @@ def select_task(
     features: pl.DataFrame,
     labels: pl.DataFrame,
     task: str,
+    sample_weights: np.ndarray | None = None,
 ) -> TaskDataset:
     if task not in TASKS:
         if task == "is_click":
@@ -235,7 +257,16 @@ def select_task(
     if y.size == 0 or not np.isin(y, (0, 1)).all():
         raise ValueError(f"Task {task} has no valid binary training rows")
     ids = features["impression_id"].to_numpy()[mask]
-    return TaskDataset(encoded.loc[mask].reset_index(drop=True), y, ids, task, int(mask.sum()))
+    selected_weights = None
+    if sample_weights is not None:
+        weights = np.asarray(sample_weights, dtype=np.float64)
+        if weights.shape != (features.height,) or not np.isfinite(weights).all() or np.any(weights <= 0):
+            raise ValueError("Sample weights must be positive, finite, and row-aligned")
+        selected_weights = weights[mask]
+    return TaskDataset(
+        encoded.loc[mask].reset_index(drop=True), y, ids, task,
+        int(mask.sum()), selected_weights,
+    )
 
 
 def lightgbm_parameters(config: dict[str, Any], complexity: str) -> tuple[dict[str, Any], int]:
@@ -272,6 +303,7 @@ def train_booster(
     training = lgb.Dataset(
         dataset.X,
         label=dataset.y,
+        weight=dataset.sample_weight,
         categorical_feature=adapter.categorical_features,
         free_raw_data=False,
     )
@@ -295,12 +327,18 @@ def save_model_bundle(
     task: str,
     complexity: str,
     training_metadata: dict[str, Any] | None = None,
+    adapter_source_path: Path | None = None,
 ) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     model_path = directory / "model.txt"
     adapter_path = directory / "adapter.json"
     booster.save_model(str(model_path))
-    adapter.save(adapter_path)
+    if adapter_source_path is None:
+        adapter.save(adapter_path)
+    else:
+        if not adapter_source_path.is_file():
+            raise ValueError("Audited adapter source does not exist")
+        shutil.copy2(adapter_source_path, adapter_path)
     manifest = {
         "model_version": "lgbm-infra-v1",
         "input_build_version": M2_BUILD_VERSION,
@@ -309,7 +347,9 @@ def save_model_bundle(
         "task": task,
         "complexity": complexity,
         "feature_names": adapter.feature_names,
+        "feature_dtypes": adapter.feature_dtypes,
         "categorical_features": adapter.categorical_features,
+        "vocabulary_sha256": _json_sha256(adapter.vocabularies),
         "training_config_version": "lgbm-infra-v1",
         "effective_parameters": booster.params,
         "num_trees": booster.num_trees(),
