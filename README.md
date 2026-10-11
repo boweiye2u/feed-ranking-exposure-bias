@@ -44,6 +44,8 @@ Aggregate features use normal-policy events from strictly earlier calendar days.
 
 The archive MD5 is `0820331067a3784d9691136f772b35a7`. The included archive license is CC BY-SA 4.0, but dataset-specific redistribution scope was not independently confirmed from Zenodo metadata. This repository therefore does not redistribute raw data. See the [data card](docs/data_card.md) for source, schema, randomization, and licensing caveats.
 
+When using the dataset, cite the [KuaiRand paper](https://arxiv.org/abs/2208.08696) and the official dataset release. The Python dependencies are not vendored and remain subject to their respective licenses. This repository does not yet declare a code license; reuse permission should not be inferred until the owner selects one.
+
 ## Features and models
 
 - **FS1:** released static user and basic-video fields plus interface context.

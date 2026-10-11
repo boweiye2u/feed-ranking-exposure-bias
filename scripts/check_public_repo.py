@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-MARKDOWN=[ROOT/"README.md",ROOT/"docs"/"reproducibility.md",ROOT/"reports"/"final_research_report.md"]
+MARKDOWN=[ROOT/"README.md",*sorted((ROOT/"docs").rglob("*.md")),*sorted((ROOT/"reports").rglob("*.md"))]
 
 
 def local_links(path: Path) -> list[Path]:
