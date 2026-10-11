@@ -1,7 +1,20 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from kuairand_pure.results_package import EXPECTED_M6_HASHES, load_verified_results, result_tables, sha256
+
+
+FROZEN_RESULTS = (
+    Path.home() / "recom" / "predictions" / "final" / "v1" / "m6_1_manifest.json",
+    Path.home() / "recom" / "evaluation" / "final" / "v1" / "m6_2_results.json",
+    Path.home() / "recom" / "evaluation" / "final" / "v1" / "m6_3_rq2_results.json",
+)
+pytestmark = pytest.mark.skipif(
+    not all(path.is_file() for path in FROZEN_RESULTS),
+    reason="external frozen M6 result artifacts are unavailable",
+)
 
 
 def test_final_table_provenance_and_candidate_population() -> None:
