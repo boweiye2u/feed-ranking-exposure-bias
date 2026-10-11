@@ -44,7 +44,7 @@ Aggregate features use normal-policy events from strictly earlier calendar days.
 
 The archive MD5 is `0820331067a3784d9691136f772b35a7`. The included archive license is CC BY-SA 4.0, but dataset-specific redistribution scope was not independently confirmed from Zenodo metadata. This repository therefore does not redistribute raw data. See the [data card](docs/data_card.md) for source, schema, randomization, and licensing caveats.
 
-When using the dataset, cite the [KuaiRand paper](https://arxiv.org/abs/2208.08696) and the official dataset release. The Python dependencies are not vendored and remain subject to their respective licenses. This repository does not yet declare a code license; reuse permission should not be inferred until the owner selects one.
+When using the dataset, cite the [KuaiRand paper](https://arxiv.org/abs/2208.08696) and the official dataset release. The Python dependencies are not vendored and remain subject to their respective licenses. Repository code is licensed under [Apache License 2.0](LICENSE); that code license does not grant rights to redistribute KuaiRand-Pure data or other third-party material.
 
 ## Features and models
 
@@ -73,10 +73,10 @@ RQ2 uses 50 deterministic disjoint user A/B splits in both directions. Candidate
 
 Python 3.11 or newer is required. The completed environment used Python 3.12.7 and CPU-only PyTorch.
 
-The repository currently has no public remote URL. After publication, replace `<published-repository-url>` with the URL shown by GitHub:
+Clone the public repository and create an isolated environment:
 
 ```bash
-git clone <published-repository-url> recommendation
+git clone https://github.com/boweiye2u/feed-ranking-exposure-bias.git recommendation
 cd recommendation
 python3 -m venv .venv
 source .venv/bin/activate

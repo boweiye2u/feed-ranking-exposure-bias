@@ -60,24 +60,23 @@ This establishes that a clean source checkout works without `~/recom/` when depe
 
 The README opening states the motivation and all three research questions. It prominently reports both positive all-candidate regret and the inconclusive contender-only result. All three selected PNG figures use valid relative paths. Installation, dataset acquisition, artifact configuration, entry points, the full report, the reproducibility guide, and scientific limitations are discoverable.
 
-Known placeholders are the public clone URL, GitHub owner, repository name, and code license. These must be resolved before publication.
+At M7.3, the public clone URL, GitHub owner, repository name, and code license were still approval items. The owner subsequently approved `boweiye2u/feed-ranking-exposure-bias`, Apache License 2.0, and publication of the reviewed main branch and annotated research tags.
 
-## Required approvals and publication commands
+## Publication authorization and commands
 
-Required owner decisions:
+Resolved owner decisions:
 
-1. GitHub account or organization.
-2. Public repository name (suggested: `kuairand-exposure-bias`).
-3. Code license (recommended: Apache-2.0; MIT is a simpler permissive alternative).
-4. Confirmation that the README clone placeholder has been replaced.
+1. Apache License 2.0 was approved for repository code; it does not cover KuaiRand-Pure data.
+2. The GitHub owner and repository were approved as `boweiye2u/feed-ranking-exposure-bias`.
+3. The reviewed commit, `main` branch, and existing annotated tags were approved for publication without force-pushing.
 
 After those decisions, review the chosen license and execute—not during M7.3—the equivalent of:
 
 ```bash
-# Add the approved LICENSE file and replace <published-repository-url> in README.md.
-git add LICENSE README.md
-git commit -m "docs: add approved public repository details"
-gh repo create <owner>/<repository-name> --public --source=. --remote=origin
+# Commit the approved LICENSE and publication diff:
+git add LICENSE README.md reports/m7_3_release_readiness.md
+git commit -m "docs: finalize GitHub publication"
+git remote add origin https://github.com/boweiye2u/feed-ranking-exposure-bias.git
 git remote -v
 git push -u origin main
 git push origin --follow-tags
