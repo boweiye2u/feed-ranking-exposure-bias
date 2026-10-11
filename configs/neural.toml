@@ -1,0 +1,70 @@
+[neural]
+version = "neural-infra-v1"
+input_build_version = "m2-features-v1"
+feature_set = "fs3"
+normal_training_split = "normal_train"
+seeds = [0, 1, 2]
+primary_seed = 0
+batch_size = 512
+optimizer = "adamw"
+learning_rate = 0.001
+learning_rate_schedule = "constant"
+weight_decay = 0.00001
+task_weights = [1.0, 1.0, 1.0]
+tasks = ["long_view", "like", "valid_play"]
+device = "auto"
+
+[preprocessing]
+missing_code = 0
+unknown_code = 1
+known_code_offset = 2
+numeric_imputation = "training_median"
+numeric_scaling = "training_mean_std_non_boolean"
+missing_indicators = "all_numerical_features"
+categorical_vocabulary = "authorized_normal_training_only"
+normal_only_include_is_rand = false
+rq3_joint_may_include_is_rand = true
+
+[embeddings]
+categorical_dimension = 4
+user_dimension = 16
+video_dimension = 16
+padding_id = 0
+unknown_id = 1
+history_pooling = "masked_mean"
+history_length = 20
+
+[shared_bottom]
+hidden_dimensions = [128, 64]
+dropout = 0.1
+
+[mmoe]
+num_experts = 4
+expert_dimension = 64
+tower_dimension = 32
+dropout = 0.1
+
+[ablations]
+configurations = ["shared_bottom_full", "mmoe_full", "mmoe_dense_only", "mmoe_no_history", "mmoe_no_aggregates"]
+dense_only = "exclude_user_video_id_embeddings_and_history"
+no_history = "exclude_history_pool_only"
+no_aggregates = "exclude_dense_feature_names_containing___hist_"
+
+[smoke]
+rows = 2048
+updates = 2
+seed = 0
+
+[m4_2_benchmark]
+warmup_updates = 10
+measured_updates = 100
+maximum_projected_seed_seconds = 7200.0
+temporary_seed = 202242
+
+[m4_2_training_budget]
+status = "approved"
+approved_date = "2026-10-10"
+full_training_passes = 5
+optimizer_updates = 7060
+examples_processed = 3612405
+rationale = "Five deterministic complete passes over 722481 rows; fixed across shared-bottom, MMoE, and later matched-update RQ3 arms."

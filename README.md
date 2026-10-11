@@ -106,3 +106,94 @@ python scripts/review_m2_features.py
 ```
 
 All feature, label, and sequence artifacts use ascending `impression_id` order and versioned `m2-features-v1` manifests. Loaders fail on positional misalignment or incompatible builds rather than silently joining by row. The exhaustive feature manifest and quality report are written to `~/recom/processed/m2/v1/`; see `docs/milestones/M2.4a.md` and `reports/m2_4_integration_quality.md`.
+
+## M3.1 R0 popularity baseline
+
+Materialize deterministic training-split R0 scores with:
+
+```bash
+python scripts/score_r0.py
+```
+
+R0 directly uses the FS2 strictly prior-day normal-policy smoothed video long-view rate. It reads no outcome column, performs no fitting, and writes aligned normal/random training predictions under `~/recom/predictions/r0/v1/`. See `docs/milestones/M3.1.md` and `reports/m3_1_r0_quality.md`.
+
+## M3.2a LightGBM infrastructure
+
+Audit the frozen-manifest LightGBM adapters and fit normal-training-only categorical vocabularies with:
+
+```bash
+python scripts/audit_lightgbm_interface.py
+```
+
+The audit trains no model. It validates FS1–FS3 schemas, saves deterministic categorical adapters under `~/recom/models/lightgbm/infrastructure/v1/`, and reports interface-specific task masks. The planned matrix is FS1/FS2/FS3 × shallow/deep, with separate long-view, like, tab-1 valid-play, and tab-0 literal-click models. See `docs/milestones/M3.2a.md` and `reports/m3_2a_lightgbm_infrastructure.md`.
+
+## M3.2b LightGBM training
+
+Run the frozen production benchmark and, only after it passes its resource gate, the full normal-training matrix:
+
+```bash
+python scripts/train_lightgbm_matrix.py benchmark
+python scripts/train_lightgbm_matrix.py full
+```
+
+The 24 task predictors are stored outside Git under `~/recom/models/lightgbm/v1/`. Each bundle binds its model to the exact feature schema, categorical vocabulary, task mask, training dates, fixed hyperparameters, software versions, and frozen protocol identifiers. M3.2b computes no validation/test metrics or model ranking. See `docs/milestones/M3.2b.md` and `reports/m3_2b_lightgbm_training.md`.
+
+## M3.3 normal-validation evaluation
+
+Build the authorized April 30–May 2 normal-validation features and score the unchanged R0/LightGBM candidates with:
+
+```bash
+python scripts/evaluate_normal_validation.py
+```
+
+The workflow reuses saved training categorical vocabularies, enforces strictly prior-day normal-only histories and exact ID alignment, and writes feature/prediction artifacts under `~/recom/`. By the frozen long-view pair-weighted-AUC rule, the selected LightGBM configuration is FS1 deep. This is a normal-validation selection, not a final randomized-test or cross-architecture conclusion. See `docs/milestones/M3.3.md` and `reports/m3_3_normal_validation.md`.
+
+## M4.1 neural infrastructure
+
+Fit the normal-training-only neural preprocessor and run the two-update shared-bottom/MMoE infrastructure smoke check with:
+
+```bash
+python scripts/smoke_neural_infrastructure.py
+```
+
+Neural inputs combine frozen FS3 dense fields, separate user/video ID embeddings, and masked-mean pooling of the aligned last-20 normal-policy video history. The three heads are long view, like, and tab-1 valid play; literal click remains supplementary. Preprocessing and smoke checkpoints are stored outside Git under `~/recom/models/neural/infrastructure/v1/`. No production neural model is trained in M4.1. See `docs/milestones/M4.1.md` and `reports/m4_1_neural_infrastructure.md`.
+
+## M4.2 shared-bottom training
+
+Train one approved production seed with:
+
+```bash
+python scripts/train_shared_bottom.py --seed 0
+```
+
+Seeds 0, 1 and 2 use the fixed common neural budget of 7,060 optimizer updates, batch size 512 and `drop_last=False`, corresponding to exactly 3,612,405 examples per seed. Bundles are stored under `~/recom/models/neural/shared_bottom/v1/`; see `docs/milestones/M4.2.md` and `reports/m4_2_shared_bottom_benchmark.md`.
+
+## M4.3 MMoE training
+
+Train one frozen production MMoE seed with:
+
+```bash
+python scripts/train_mmoe.py --seed 0
+```
+
+Seeds 0, 1 and 2 use the same data, masks, preprocessing, and 7,060-update budget as shared-bottom. Aggregate gate/expert-use diagnostics and checksum-bound bundles are stored under `~/recom/models/neural/mmoe/v1/`; see `docs/milestones/M4.3.md` and `reports/m4_3_mmoe_training.md`.
+
+## M4.4 MMoE ablations
+
+Train one frozen ablation seed with:
+
+```bash
+python scripts/train_mmoe_ablation.py --ablation dense_only --seed 0
+```
+
+The only allowed ablations are dense-only, no-history, and no-aggregates. All nine seed bundles use the common 7,060-update budget and are stored under `~/recom/models/neural/ablations/v1/`. Run `python scripts/summarize_mmoe_ablations.py` to rebuild and verify the aggregate manifest. See `docs/milestones/M4.4.md` and `reports/m4_4_mmoe_ablations.md`.
+
+## M4.5 neural validation and candidate freeze
+
+Run the immutable neural checkpoints on the authorized normal-validation data and freeze the 12-configuration candidate population with:
+
+```bash
+python scripts/evaluate_neural_validation.py
+```
+
+The workflow reuses the training-fitted neural adapter, builds strictly earlier normal-policy last-20 histories, evaluates all three seeds, and writes large predictions plus the candidate manifest under `~/recom/predictions/validation/v1/`. See `docs/milestones/M4.5.md` and `reports/m4_5_neural_validation.md`.

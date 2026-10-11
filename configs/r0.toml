@@ -1,0 +1,36 @@
+[r0]
+version = "r0-v1"
+name = "historical_video_popularity"
+input_stage = "fs2"
+input_build_version = "m2-features-v1"
+score_feature = "video__hist_long_view_rate"
+score_column = "r0_score"
+output_subdirectory = "r0/v1"
+authorized_splits = ["normal_train", "random_train"]
+
+[history_contract]
+source = "normal_only"
+cutoff = "strictly_prior_calendar_day"
+alpha = 20.0
+prior_source = "normal_burn_in_20220409_20220411"
+long_view_prior = 0.3364927893253054
+zero_history_score = 0.3364927893253054
+
+[input]
+scoring_columns = ["impression_id", "video__hist_long_view_rate"]
+diagnostic_columns = [
+  "impression_id",
+  "video__hist_impression_count",
+  "video__hist_long_view_positive_count",
+  "video__hist_long_view_rate",
+]
+forbidden_inputs = [
+  "user_id", "long_view", "is_click", "is_like", "context__is_rand",
+  "user__hist_impression_count", "user__hist_long_view_rate",
+]
+
+[evaluation]
+metric = "pair_weighted_within_user_auc"
+target = "long_view"
+pair_cap_sensitivity = 952
+checkpoint_usage = "synthetic_validation_only"

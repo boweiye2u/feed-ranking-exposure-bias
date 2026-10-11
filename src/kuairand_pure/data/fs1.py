@@ -157,10 +157,16 @@ def _read_field(source: Any) -> bytes | None:
         value.extend(byte)
 
 
-def _labels(data_dir: Path, spec: SplitSpec) -> pl.LazyFrame:
+def _labels(
+    data_dir: Path,
+    spec: SplitSpec,
+    *,
+    workflow: str = "training",
+    purpose: str = "training",
+) -> pl.LazyFrame:
     authorize_outcome_access(
         load_protocol(), source=spec.source, start=spec.start, end=spec.end,
-        workflow="training", purpose="training",
+        workflow=workflow, purpose=purpose,
     )
     config, files = _paths(data_dir)
     codes = config["source_codes"]

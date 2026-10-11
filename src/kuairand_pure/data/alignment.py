@@ -116,3 +116,56 @@ def load_aligned_model_data(
         raise ValueError("Sequence schema differs from its artifact manifest")
     validate_row_alignment(features, labels, sequence)
     return features, labels, sequence
+
+
+def load_aligned_feature_columns(
+    features_path: Path,
+    labels_path: Path,
+    *,
+    required_columns: tuple[str, ...],
+    expected_stage: str,
+    expected_split: str,
+    expected_build_version: str = M2_BUILD_VERSION,
+) -> pl.DataFrame:
+    """Load a strict feature projection after ID-only label alignment checks.
+
+    Outcome columns from the label artifact are never projected. The caller
+    receives exactly ``required_columns`` and cannot rely on silent reordering.
+    """
+    if not required_columns or required_columns[0] != "impression_id":
+        raise ValueError("Feature projection must begin with impression_id")
+    if len(set(required_columns)) != len(required_columns):
+        raise ValueError("Feature projection contains duplicate columns")
+    manifest_path = features_path.parent / "artifact_manifest.json"
+    if not manifest_path.exists():
+        raise ValueError(f"Missing artifact manifest: {manifest_path}")
+    manifest = json.loads(manifest_path.read_text())
+    expected = {
+        "build_version": expected_build_version,
+        "stage": expected_stage,
+        "split": expected_split,
+        "canonical_order": CANONICAL_ORDER,
+    }
+    for field, value in expected.items():
+        if manifest.get(field) != value:
+            raise ValueError(
+                f"Incompatible artifact manifest {field}: "
+                f"expected {value!r}, found {manifest.get(field)!r}"
+            )
+    feature_schema = manifest.get("feature_schema", {})
+    missing_columns = set(required_columns).difference(feature_schema)
+    if missing_columns:
+        raise ValueError(f"Required feature columns are absent: {sorted(missing_columns)}")
+    features = pl.read_parquet(features_path, columns=list(required_columns))
+    label_ids = pl.read_parquet(labels_path, columns=["impression_id"])
+    if manifest.get("rows") != features.height:
+        raise ValueError("Artifact row count differs from its manifest")
+    observed = {name: str(dtype) for name, dtype in features.schema.items()}
+    expected_projection = {name: feature_schema[name] for name in required_columns}
+    if observed != expected_projection:
+        raise ValueError("Feature projection schema differs from its artifact manifest")
+    validate_impression_ids(features, "features")
+    validate_impression_ids(label_ids, "label IDs")
+    if not features["impression_id"].equals(label_ids["impression_id"]):
+        raise ValueError("Feature and label impression IDs differ by row")
+    return features
